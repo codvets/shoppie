@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "685723196128",
+    "project_id": "shop-app-codvets",
+    "storage_bucket": "shop-app-codvets.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685723196128:android:1a4188950e5dab95eece85",
+        "android_client_info": {
+          "package_name": "com.codvets.shoppie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685723196128-5tn66igl4u0rkoi66m1r6ssglfn6vb74.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfAUWDqqCv5QazfNY1jPeCdXRCQ8_lHJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685723196128-5tn66igl4u0rkoi66m1r6ssglfn6vb74.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
