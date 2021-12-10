@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
-import 'package:shop_app/screens/clippaths/lower_clippath.dart';
-import 'package:shop_app/screens/clippaths/upper_clippath.dart';
-import 'package:shop_app/screens/login_screen.dart';
+import 'package:shop_app/screens/buyer/clippaths/lower_clippath.dart';
+import 'package:shop_app/screens/buyer/clippaths/upper_clippath.dart';
+
+import 'package:shop_app/utils/routes.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -219,11 +220,8 @@ class _SignUpState extends State<SignUp> {
                     const Text("Already have an account?"),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ));
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            Routes.loginScreen, (route) => false);
                       },
                       child: const Text(
                         "Login",
