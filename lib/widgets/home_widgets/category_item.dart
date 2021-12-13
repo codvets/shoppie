@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 import 'package:shop_app/utils/screen_utils.dart';
 
 class CategoryItem extends StatelessWidget {
   CategoryItem({
     Key? key,
-    required this.itemName,
+    required this.category,
     required this.isSelected,
   }) : super(key: key);
 
-  final String itemName;
+  final Category category;
   bool isSelected = false;
 
   @override
@@ -25,13 +27,16 @@ class CategoryItem extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: null,
+        onPressed: () {
+          Provider.of<HomeNotifier>(context, listen: false)
+              .changeCategory(category);
+        },
         child: SizedBox(
           width: ScreenUtils.screenWidth(context) * 0.2,
           child: Center(
             child: Text(
-              itemName,
-              style: TextStyle(color: Colors.white),
+              category.toString().split('.')[1].toUpperCase(),
+              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
             ),
           ),
         ),

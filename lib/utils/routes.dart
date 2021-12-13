@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 import 'package:shop_app/screens/buyer/auth_landing.dart';
 import 'package:shop_app/screens/buyer/home.dart';
 
@@ -18,7 +20,10 @@ class Routes {
       {
         authLanding: (context) => AuthLanding(),
         loginScreen: (context) => LoginScreen(),
-        home: (context) => Home(),
+        home: (context) => ChangeNotifierProvider(
+              create: (context) => HomeNotifier(),
+              child: Home(),
+            ),
         signUp: (context) => SignUp(),
         sellerHome: (context) => SellerHome()
       };

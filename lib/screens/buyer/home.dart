@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
+import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 import 'package:shop_app/utils/screen_utils.dart';
 import 'package:shop_app/widgets/home_widgets/category_item.dart';
 import 'package:shop_app/widgets/home_widgets/search_bar.dart';
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
-
-  final List<String> categoryItems = ["Shoes", "Clothes", "Pants", "Shirts"];
 
   @override
   Widget build(BuildContext context) {
@@ -104,13 +103,19 @@ class Home extends StatelessWidget {
                   SizedBox(
                     // color: Colors.blue,
                     height: ScreenUtils.screenHeight(context) * 0.1,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: categoryItems
-                          .map((e) =>
-                              CategoryItem(itemName: e, isSelected: true))
-                          .toList(),
-                    ),
+                    child:
+                        Consumer<HomeNotifier>(builder: (context, provider, _) {
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          final cat = Category.values[index];
+                          return CategoryItem(
+                              category: cat,
+                              isSelected: cat == provider.selectedCategory);
+                        },
+                      );
+                    }),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -146,16 +151,21 @@ class Home extends StatelessWidget {
                   SizedBox(
                     // color: Colors.blue,
                     height: ScreenUtils.screenHeight(context) * 0.5,
-                    child: GridView(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2),
-                      children: const <Widget>[
-                        GridContainer(),
-                        GridContainer(),
-                        GridContainer(),
-                        GridContainer(),
-                      ],
+                    child: Consumer<HomeNotifier>(
+                      builder: (context, provider, _) {
+                        switch (provider.selectedCategory) {
+                          case Category.shoes:
+                            return CategoryBuilder(items: shoes);
+                          case Category.clothes:
+                            return CategoryBuilder(items: clothes);
+
+                          case Category.pants:
+                            return CategoryBuilder(items: pants);
+
+                          case Category.shirts:
+                            return CategoryBuilder(items: shirts);
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -171,6 +181,43 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  List<String> shoes = ["shoe1", "shoe2", "shoe3"];
+  List<String> clothes = [
+    "clothes1",
+    "clothes2",
+  ];
+  List<String> pants = [
+    "pants1",
+    "spant2",
+    "pants3",
+    "pants3",
+    "pants3",
+    "pants3"
+  ];
+  List<String> shirts = [];
+}
+
+class CategoryBuilder extends StatelessWidget {
+  CategoryBuilder({
+    Key? key,
+    required this.items,
+  }) : super(key: key);
+
+  List<String> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      gridDelegate:
+          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return Text(item);
+      },
+      itemCount: items.length,
     );
   }
 }

@@ -207,10 +207,13 @@ class _SignUpState extends State<SignUp> {
                 height: MediaQuery.of(context).size.height * 0.25,
                 width: MediaQuery.of(context).size.width,
                 decoration: const BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                  Color.fromRGBO(255, 169, 132, 60),
-                  Color.fromRGBO(255, 121, 63, 60),
-                ])),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromRGBO(255, 169, 132, 60),
+                      Color.fromRGBO(255, 121, 63, 60),
+                    ],
+                  ),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
