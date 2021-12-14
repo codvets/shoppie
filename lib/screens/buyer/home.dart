@@ -46,26 +46,28 @@ class Home extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            const Icon(
-                              Icons.search,
-                              size: 30,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              width: ScreenUtils.screenWidth(context) * 0.7,
-                              child: SearchBar(),
-                            ),
-                            const Icon(
-                              Icons.vertical_split_rounded,
-                              color: Colors.grey,
-                            ),
-                          ]),
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          const Icon(
+                            Icons.search,
+                            size: 30,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(
+                            width: ScreenUtils.screenWidth(context) * 0.7,
+                            child: SearchBar(),
+                          ),
+                          const Icon(
+                            Icons.vertical_split_rounded,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
                     ),
                     decoration: BoxDecoration(
-                        color: Colors.white38,
-                        borderRadius: BorderRadius.circular(25)),
+                      color: Colors.white38,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                     height: ScreenUtils.screenHeight(context) * 0.07,
                     width: ScreenUtils.screenWidth(context) * 0.9,
                   ),
@@ -131,15 +133,17 @@ class Home extends StatelessWidget {
                                 Text(
                                   "Trending",
                                   style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Text(
                                   "See All",
                                   style: TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.orange,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 )
                               ],
                             ),

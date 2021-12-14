@@ -30,7 +30,7 @@ class AuthNotifier with ChangeNotifier {
     try {
       final ShoppieUser shoppieUser =
           await _network.login(email: email, password: password);
-      if (shoppieUser.type == "seller") {
+      if (shoppieUser.type == UserType.seller) {
         Navigator.of(context).pushReplacementNamed(Routes.sellerHome);
       } else {
         Navigator.of(context).pushReplacementNamed(Routes.home);
