@@ -25,6 +25,7 @@ class Routes {
               child: Home(),
             ),
         signUp: (context) => SignUp(),
-        sellerHome: (context) => SellerHome()
+        sellerHome: (context) => ChangeNotifierProvider(
+            create: (context) => HomeNotifier(), child: SellerHome())
       };
 }

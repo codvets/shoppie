@@ -28,9 +28,8 @@ class AuthNotifier with ChangeNotifier {
   void login(BuildContext context,
       {required String email, required String password}) async {
     try {
-      final ShoppieUser shoppieUser =
-          await _network.login(email: email, password: password);
-      if (shoppieUser.type == UserType.seller) {
+      currentUser = await _network.login(email: email, password: password);
+      if (currentUser.type == UserType.seller) {
         Navigator.of(context).pushReplacementNamed(Routes.sellerHome);
       } else {
         Navigator.of(context).pushReplacementNamed(Routes.home);
@@ -45,10 +44,10 @@ class AuthNotifier with ChangeNotifier {
       required String email,
       required String password}) async {
     final ShoppieUser user =
-        ShoppieUser(email: email, name: name, type: UserType.buyer);
+        ShoppieUser(email: email, name: name, type: UserType.buyer, uid: "");
 
     try {
-      await _network.register(user: user, password: password);
+      currentUser = await _network.register(user: user, password: password);
 
       Navigator.pushReplacementNamed(context, Routes.home);
     } on FirebaseException catch (error, stk) {

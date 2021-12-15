@@ -1,12 +1,16 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/shoppie_user.dart';
 
 class Network {
   final firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   Future<ShoppieUser> checkCurrentUser() async {
     final firebaseUser = firebaseAuth.currentUser;
@@ -20,7 +24,8 @@ class Network {
         if (documentSnapshot.exists) {
           final data = documentSnapshot.data();
           print("USER DATA FROM FIRESTORE ${data}");
-          final shoppieUser = ShoppieUser.fromJson(data!);
+          final shoppieUser =
+              ShoppieUser.fromJson(data!, uid: firebaseUser.uid);
           return shoppieUser;
         }
         throw FirebaseException(
@@ -47,7 +52,7 @@ class Network {
 
       final data = userSnapshot.data()!;
 
-      return ShoppieUser.fromJson(data);
+      return ShoppieUser.fromJson(data, uid: userCreds.user!.uid);
     } on FirebaseAuthException catch (error, stk) {
       print('An error occured during sign in: $error \n Stacktrace: $stk');
       throw FirebaseAuthException(code: error.code, message: error.message);
@@ -60,6 +65,7 @@ class Network {
       final UserCredential creds =
           await firebaseAuth.createUserWithEmailAndPassword(
               email: user.email, password: password);
+      user.uid = creds.user!.uid;
       await firestore
           .collection("users")
           .doc(creds.user!.uid)
@@ -68,5 +74,27 @@ class Network {
     } on FirebaseException catch (error, stk) {
       throw FirebaseException(plugin: "Firebase", message: "Error: $error");
     }
+  }
+
+  Future<void> uploadProduct(Product product, File productImage) async {
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    product.id = id;
+    final productImageUrl =
+        await uploadProductImage(image: productImage, product: product);
+    product.image = productImageUrl;
+    await firestore.collection("products").doc(id).set(product.toJson());
+  }
+
+  Future<String> uploadProductImage(
+      {required File image, required Product product}) async {
+    final storageReference =
+        storage.ref("products/${product.sellerId}/${product.id}");
+
+    TaskSnapshot uploadTask = await storageReference.putFile(image);
+    final String url = await uploadTask.ref.getDownloadURL();
+
+    print(url);
+
+    return url;
   }
 }
