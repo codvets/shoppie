@@ -15,6 +15,8 @@ class HomeNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  List<Product> products = List.empty(growable: true);
+
   Future<void> uploadProduct(
     BuildContext context, {
     required File image,
@@ -36,6 +38,10 @@ class HomeNotifier with ChangeNotifier {
         id: "");
 
     await _network.uploadProduct(product, image);
+  }
+
+  Future<List<Product>> getProducts() async {
+    return await _network.getProducts();
   }
 }
 

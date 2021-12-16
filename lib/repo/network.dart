@@ -97,4 +97,23 @@ class Network {
 
     return url;
   }
+
+  Future<List<Product>> getProducts() async {
+    try {
+      final querySnapshot = await firestore.collection("products").get();
+      print(querySnapshot.size);
+      List<Product> products = List.empty(growable: true);
+
+      querySnapshot.docs.forEach((doc) {
+        final data = doc.data();
+
+        final product = Product.fromJson(data);
+        products.add(product);
+      });
+      return products;
+    } on FirebaseException catch (error, stk) {
+      //
+      throw error;
+    }
+  }
 }

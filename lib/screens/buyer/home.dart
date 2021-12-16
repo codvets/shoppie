@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/product.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 import 'package:shop_app/utils/screen_utils.dart';
@@ -27,7 +30,14 @@ class Home extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(Icons.menu, size: 25, color: Colors.grey),
+                          IconButton(
+                            icon:
+                                Icon(Icons.menu, size: 25, color: Colors.grey),
+                            onPressed: () {
+                              Provider.of<HomeNotifier>(context, listen: false)
+                                  .getProducts();
+                            },
+                          ),
                           IconButton(
                               onPressed: () {
                                 Provider.of<AuthNotifier>(context,
@@ -155,20 +165,51 @@ class Home extends StatelessWidget {
                   SizedBox(
                     // color: Colors.blue,
                     height: ScreenUtils.screenHeight(context) * 0.5,
-                    child: Consumer<HomeNotifier>(
-                      builder: (context, provider, _) {
-                        switch (provider.selectedCategory) {
-                          case Category.shoes:
-                            return CategoryBuilder(items: shoes);
-                          case Category.clothes:
-                            return CategoryBuilder(items: clothes);
+                    child: FutureBuilder<List<Product>>(
+                      future: Provider.of<HomeNotifier>(context, listen: false)
+                          .getProducts(),
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                            return Center(
+                                child: Text('No internet connection'));
 
-                          case Category.pants:
-                            return CategoryBuilder(items: pants);
+                          case ConnectionState.waiting:
+                            return Center(child: CircularProgressIndicator());
 
-                          case Category.shirts:
-                            return CategoryBuilder(items: shirts);
+                          case ConnectionState.active:
+                            break;
+                          case ConnectionState.done:
+                            {
+                              if (snapshot.hasData) {
+                                final data = snapshot.data!;
+
+                                final shoes = data
+                                    .where((product) =>
+                                        product.category == "Clothes")
+                                    .toList();
+                                return Consumer<HomeNotifier>(
+                                  builder: (context, provider, _) {
+                                    switch (provider.selectedCategory) {
+                                      case Category.shoes:
+                                        return CategoryBuilder(items: shoes);
+                                      case Category.clothes:
+                                        return CategoryBuilder(items: shoes);
+
+                                      case Category.pants:
+                                        return CategoryBuilder(items: shoes);
+
+                                      case Category.shirts:
+                                        return CategoryBuilder(items: shoes);
+                                    }
+                                  },
+                                );
+                              }
+                              return Center(
+                                  child: Text("No products yet found"));
+                            }
                         }
+                        return SizedBox();
                       },
                     ),
                   ),
@@ -210,7 +251,7 @@ class CategoryBuilder extends StatelessWidget {
     required this.items,
   }) : super(key: key);
 
-  List<String> items;
+  List<Product> items;
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +260,7 @@ class CategoryBuilder extends StatelessWidget {
           const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (context, index) {
         final item = items[index];
-        return Text(item);
+        return Text(item.title);
       },
       itemCount: items.length,
     );

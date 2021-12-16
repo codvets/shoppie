@@ -205,6 +205,13 @@ class _SellerHomeState extends State<SellerHome> {
                 },
                 child: Text('Upload Product'),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  Provider.of<AuthNotifier>(context, listen: false)
+                      .logout(context);
+                },
+                child: Text('Log Out'),
+              )
             ],
           ),
         ),

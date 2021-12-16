@@ -17,7 +17,7 @@ class ShoppieUser {
   factory ShoppieUser.fromJson(Map<String, dynamic> json,
           {required String uid}) =>
       ShoppieUser(
-        uid: json["uid"],
+        uid: json["uid"] ?? uid,
         email: json['email'],
         name: json['name'],
         type: json['type'] == "buyer"
