@@ -40,8 +40,20 @@ class HomeNotifier with ChangeNotifier {
     await _network.uploadProduct(product, image);
   }
 
-  Future<List<Product>> getProducts() async {
-    return await _network.getProducts();
+  Future<List<Product>> getProducts(Category category) async {
+    return await _network.getProducts(category);
+  }
+
+  Future<void> favorizeProduct(Product product, String uid) async {
+    await _network.favorizeProduct(product, uid);
+  }
+
+  Future<void> addToCart(Product product, String uid) async {
+    await _network.addToCart(product, uid);
+  }
+
+  Future<List<Product>> getCartProducts(String uid) async {
+    return await _network.getCartProducts(uid);
   }
 }
 

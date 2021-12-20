@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
-import 'package:shop_app/utils/screen_utils.dart';
+import 'package:shop_app/utils/utils.dart';
 
 class CategoryItem extends StatelessWidget {
   CategoryItem({

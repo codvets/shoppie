@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/shoppie_user.dart';
+import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 
 class Network {
   final firebaseAuth = FirebaseAuth.instance;
@@ -98,10 +99,13 @@ class Network {
     return url;
   }
 
-  Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProducts(Category category) async {
+    String cat = getCategoryInString(category);
     try {
-      final querySnapshot = await firestore.collection("products").get();
-      print(querySnapshot.size);
+      final querySnapshot = await firestore
+          .collection("products")
+          .where("category", isEqualTo: cat)
+          .get();
       List<Product> products = List.empty(growable: true);
 
       querySnapshot.docs.forEach((doc) {
@@ -114,6 +118,66 @@ class Network {
     } on FirebaseException catch (error, stk) {
       //
       throw error;
+    }
+  }
+
+  String getCategoryInString(Category category) {
+    switch (category) {
+      case Category.shoes:
+        return "Shoes";
+      case Category.clothes:
+        return "Clothes";
+      case Category.pants:
+        return "Pants";
+      case Category.shirts:
+        return "Shirts";
+    }
+  }
+
+  Future<void> favorizeProduct(Product product, String uid) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(uid)
+          .collection("favorizedProducts")
+          .doc(product.id)
+          .set(product.toJson());
+    } catch (e) {}
+  }
+
+  Future<void> addToCart(Product product, String uid) async {
+    final data = product.toJson();
+    data["isPurchased"] = false;
+    try {
+      await firestore
+          .collection("users")
+          .doc(uid)
+          .collection("cart")
+          .doc(product.id)
+          .set(data);
+    } on FirebaseException catch (error, stk) {
+      throw error;
+    }
+  }
+
+  Future<List<Product>> getCartProducts(String uid) async {
+    try {
+      final snapshot = await firestore
+          .collection("users")
+          .doc(uid)
+          .collection("cart")
+          .where("isPurchased", isEqualTo: false)
+          .get();
+
+      List<Product> cartProducts = List.empty(growable: true);
+
+      snapshot.docs.forEach((element) {
+        final product = Product.fromJson(element.data());
+        cartProducts.add(product);
+      });
+      return cartProducts;
+    } catch (e) {
+      throw e;
     }
   }
 }

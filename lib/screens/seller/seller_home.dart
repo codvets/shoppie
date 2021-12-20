@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
-import 'package:shop_app/utils/screen_utils.dart';
+import 'package:shop_app/utils/utils.dart';
 
 class SellerHome extends StatefulWidget {
   SellerHome({Key? key}) : super(key: key);

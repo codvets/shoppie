@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
-import 'package:shop_app/utils/screen_utils.dart';
+import 'package:shop_app/utils/routes.dart';
+import 'package:shop_app/utils/utils.dart';
 import 'package:shop_app/widgets/home_widgets/category_item.dart';
 import 'package:shop_app/widgets/home_widgets/search_bar.dart';
 
@@ -33,10 +34,7 @@ class Home extends StatelessWidget {
                           IconButton(
                             icon:
                                 Icon(Icons.menu, size: 25, color: Colors.grey),
-                            onPressed: () {
-                              Provider.of<HomeNotifier>(context, listen: false)
-                                  .getProducts();
-                            },
+                            onPressed: () {},
                           ),
                           IconButton(
                               onPressed: () {
@@ -165,53 +163,42 @@ class Home extends StatelessWidget {
                   SizedBox(
                     // color: Colors.blue,
                     height: ScreenUtils.screenHeight(context) * 0.5,
-                    child: FutureBuilder<List<Product>>(
-                      future: Provider.of<HomeNotifier>(context, listen: false)
-                          .getProducts(),
-                      builder: (context, snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.none:
-                            return Center(
-                                child: Text('No internet connection'));
-
-                          case ConnectionState.waiting:
-                            return Center(child: CircularProgressIndicator());
-
-                          case ConnectionState.active:
-                            break;
-                          case ConnectionState.done:
-                            {
-                              if (snapshot.hasData) {
-                                final data = snapshot.data!;
-
-                                final shoes = data
-                                    .where((product) =>
-                                        product.category == "Clothes")
-                                    .toList();
-                                return Consumer<HomeNotifier>(
-                                  builder: (context, provider, _) {
-                                    switch (provider.selectedCategory) {
-                                      case Category.shoes:
-                                        return CategoryBuilder(items: shoes);
-                                      case Category.clothes:
-                                        return CategoryBuilder(items: shoes);
-
-                                      case Category.pants:
-                                        return CategoryBuilder(items: shoes);
-
-                                      case Category.shirts:
-                                        return CategoryBuilder(items: shoes);
-                                    }
-                                  },
-                                );
-                              }
+                    child:
+                        Consumer<HomeNotifier>(builder: (context, provider, _) {
+                      return FutureBuilder<List<Product>>(
+                        future: provider.getProducts(provider.selectedCategory),
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.none:
                               return Center(
-                                  child: Text("No products yet found"));
-                            }
-                        }
-                        return SizedBox();
-                      },
-                    ),
+                                  child: Text('No internet connection'));
+
+                            case ConnectionState.waiting:
+                              return Center(child: CircularProgressIndicator());
+
+                            case ConnectionState.active:
+                              break;
+                            case ConnectionState.done:
+                              {
+                                if (snapshot.hasData) {
+                                  final data = snapshot.data!;
+                                  if (data.isEmpty)
+                                    return Center(
+                                        child: Text("No products yet found"));
+                                  return Consumer<HomeNotifier>(
+                                    builder: (context, provider, _) {
+                                      return CategoryBuilder(items: data);
+                                    },
+                                  );
+                                }
+                                return Center(
+                                    child: Text("No products yet found"));
+                              }
+                          }
+                          return SizedBox();
+                        },
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -228,21 +215,6 @@ class Home extends StatelessWidget {
       ),
     );
   }
-
-  List<String> shoes = ["shoe1", "shoe2", "shoe3"];
-  List<String> clothes = [
-    "clothes1",
-    "clothes2",
-  ];
-  List<String> pants = [
-    "pants1",
-    "spant2",
-    "pants3",
-    "pants3",
-    "pants3",
-    "pants3"
-  ];
-  List<String> shirts = [];
 }
 
 class CategoryBuilder extends StatelessWidget {
@@ -259,8 +231,8 @@ class CategoryBuilder extends StatelessWidget {
       gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (context, index) {
-        final item = items[index];
-        return Text(item.title);
+        final product = items[index];
+        return GridContainer(product: product);
       },
       itemCount: items.length,
     );
@@ -268,92 +240,120 @@ class CategoryBuilder extends StatelessWidget {
 }
 
 class GridContainer extends StatelessWidget {
-  const GridContainer({Key? key}) : super(key: key);
+  const GridContainer({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
-        // height: ScreenUtils.screenHeight(context) * 0.1,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 30,
-              // color: Colors.red,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromRGBO(255, 121, 63, 1),
-                        ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(Routes.productDetails, arguments: product);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
+          // height: ScreenUtils.screenHeight(context) * 0.1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 30,
+                // color: Colors.red,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    product.discount == null
+                        ? SizedBox()
+                        : Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  const Color.fromRGBO(255, 121, 63, 1),
+                                ),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              ),
+                              onPressed: null,
+                              child: SizedBox(
+                                width: 30,
+                                child: Center(
+                                  child: Text(
+                                    "${product.discount.toString()}%",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: IconButton(
+                        icon: Icon(Icons.favorite_border, color: Colors.grey),
+                        onPressed: () {
+                          Provider.of<HomeNotifier>(context, listen: false)
+                              .favorizeProduct(
+                                  product,
+                                  Provider.of<AuthNotifier>(context,
+                                          listen: false)
+                                      .currentUser
+                                      .uid);
+                        },
                       ),
-                      onPressed: null,
-                      child: const SizedBox(
-                        width: 30,
-                        child: Center(
-                          child: Text(
-                            "12%",
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.favorite_border, color: Colors.grey),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                height: ScreenUtils.screenHeight(context) * 0.11,
-                decoration: BoxDecoration(
-                  // color: Colors.red,
-                  // color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                        'https://5.imimg.com/data5/VD/XE/UY/SELLER-61106641/red-black-shoes-jpeg-500x500.jpeg'),
-                    fit: BoxFit.cover,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Container(
+                  height: ScreenUtils.screenHeight(context) * 0.11,
+                  decoration: BoxDecoration(
+                    // color: Colors.red,
+                    // color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    image: DecorationImage(
+                      image: NetworkImage(product.image),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    '\$125.0',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text('\$125.0'),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      product.discount != null
+                          ? '\$${ScreenUtils.discountedPrice(product.price, product.discount!)}'
+                          : "\$${product.price}",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    if (product.discount != null) Text('\$${product.price}'),
+                  ],
+                ),
               ),
-            ),
-            const Text(
-              'Nike Air Shoes',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            )
-          ],
+              Text(
+                product.title,
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -395,11 +395,42 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 ),
                 Center(
                   heightFactor: 0.6,
-                  child: FloatingActionButton(
-                      backgroundColor: const Color.fromRGBO(255, 121, 63, 1),
-                      child: const Icon(Icons.shopping_basket),
-                      elevation: 0.1,
-                      onPressed: () {}),
+                  child: FutureBuilder<List<Product>>(
+                      future: Provider.of<HomeNotifier>(context, listen: false)
+                          .getCartProducts(
+                              Provider.of<AuthNotifier>(context, listen: false)
+                                  .currentUser
+                                  .uid),
+                      builder: (context, snapshot) {
+                        int cartLength = 0;
+                        if (snapshot.data != null) {
+                          cartLength = snapshot.data!.length;
+                        }
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            FloatingActionButton(
+                              backgroundColor:
+                                  const Color.fromRGBO(255, 121, 63, 1),
+                              child: const Icon(Icons.shopping_basket),
+                              elevation: 0.1,
+                              onPressed: () {},
+                            ),
+                            if (cartLength > 0)
+                              Positioned(
+                                right: 5,
+                                top: -5,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.red,
+                                  radius: 14,
+                                  child: Text(
+                                    cartLength.toString(),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      }),
                 ),
                 SizedBox(
                   width: ScreenUtils.screenWidth(context),
@@ -426,9 +457,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                                 ? const Color.fromRGBO(255, 121, 63, 1)
                                 : Colors.grey.shade400,
                           ),
-                          onPressed: () {
-                            setBottomBarIndex(1);
-                          }),
+                          onPressed: () {}),
                       Container(
                         width: ScreenUtils.screenWidth(context) * 0.20,
                       ),

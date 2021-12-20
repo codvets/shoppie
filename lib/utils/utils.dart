@@ -61,4 +61,8 @@ class ScreenUtils {
           );
         });
   }
+
+  static double discountedPrice(double originalPrice, int discount) {
+    return originalPrice - (originalPrice * discount / 100);
+  }
 }
