@@ -13,6 +13,8 @@ class Network {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
+  String get uid => firebaseAuth.currentUser!.uid;
+
   Future<ShoppieUser> checkCurrentUser() async {
     final firebaseUser = firebaseAuth.currentUser;
 
@@ -160,22 +162,32 @@ class Network {
     }
   }
 
-  Future<List<Product>> getCartProducts(String uid) async {
+  Future<void> deleteProductFromCart({required String productId}) async {
+    await firestore
+        .collection("users")
+        .doc(uid)
+        .collection("cart")
+        .doc(productId)
+        .delete();
+  }
+
+  Stream<List<Product>> getCartProducts(String uid) {
     try {
-      final snapshot = await firestore
+      return firestore
           .collection("users")
           .doc(uid)
           .collection("cart")
           .where("isPurchased", isEqualTo: false)
-          .get();
+          .snapshots()
+          .map((event) {
+        final List<Product> products = List.empty(growable: true);
 
-      List<Product> cartProducts = List.empty(growable: true);
-
-      snapshot.docs.forEach((element) {
-        final product = Product.fromJson(element.data());
-        cartProducts.add(product);
+        for (final doc in event.docs) {
+          final product = Product.fromJson(doc.data());
+          products.add(product);
+        }
+        return products;
       });
-      return cartProducts;
     } catch (e) {
       throw e;
     }

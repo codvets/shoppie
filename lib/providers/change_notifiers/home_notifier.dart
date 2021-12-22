@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,8 @@ class HomeNotifier with ChangeNotifier {
 
     notifyListeners();
   }
+
+  List<Product> cartProducts = List.empty(growable: true);
 
   List<Product> products = List.empty(growable: true);
 
@@ -52,8 +55,22 @@ class HomeNotifier with ChangeNotifier {
     await _network.addToCart(product, uid);
   }
 
-  Future<List<Product>> getCartProducts(String uid) async {
-    return await _network.getCartProducts(uid);
+  Stream<List<Product>> getCartProducts(String uid) {
+    return _network.getCartProducts(uid);
+  }
+
+  Future<void> deleteProductFromCart(String productId) async {
+    log('BEFORE DELETE: ${cartProducts.length}');
+    await _network.deleteProductFromCart(productId: productId).then((value) {
+      cartProducts.removeWhere((element) => element.id == productId);
+      notifyListeners();
+    });
+  }
+
+  void populateCart(List<Product> cartItems) {
+    cartProducts.clear();
+    cartProducts.addAll(cartItems);
+    notifyListeners();
   }
 }
 
