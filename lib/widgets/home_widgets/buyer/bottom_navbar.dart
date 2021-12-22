@@ -50,7 +50,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
                                   .currentUser
                                   .uid),
                       builder: (context, snapshot) {
-                        log("snapshot: ${snapshot.data}");
                         int cartLength = 0;
                         if (snapshot.data != null) {
                           cartLength = snapshot.data!.length;
@@ -70,8 +69,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                               child: const Icon(Icons.shopping_basket),
                               elevation: 0.1,
                               onPressed: () {
-                                Navigator.of(context).pushNamed(Routes.cart,
-                                    arguments: snapshot.data);
+                                Navigator.of(context).pushNamed(Routes.cart);
                               },
                             ),
                             if (cartLength > 0)

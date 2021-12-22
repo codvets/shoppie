@@ -1,53 +1,113 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
+import 'package:shop_app/utils/utils.dart';
+import 'package:shop_app/widgets/home_widgets/buyer/cart_widgets/location_card.dart';
+import 'package:shop_app/widgets/home_widgets/buyer/cart_widgets/order_details_card.dart';
+import 'package:shop_app/widgets/home_widgets/buyer/cart_widgets/payment_details_card.dart';
+import 'package:shop_app/widgets/home_widgets/buyer/cart_widgets/product_summar_card.dart';
 
-class Cart extends StatefulWidget {
+class Cart extends StatelessWidget {
   const Cart({Key? key}) : super(key: key);
 
   @override
-  State<Cart> createState() => _CartState();
-}
-
-class _CartState extends State<Cart> {
-  @override
   Widget build(BuildContext context) {
-    log("CART SCREEN ${Provider.of<HomeNotifier>(context, listen: false).cartProducts.length.toString()}");
+    final products = Provider.of<HomeNotifier>(context).cartProducts;
     return Scaffold(
-      body: Consumer<HomeNotifier>(builder: (context, provider, _) {
-        return ListView.builder(
-          itemCount: provider.cartProducts.length,
-          itemBuilder: (context, index) {
-            final product = provider.cartProducts[index];
-            return ListTile(
-              leading: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image(
-                    image: NetworkImage(product.image),
-                    height: 50,
-                    width: 50,
+      backgroundColor: Colors.grey[300],
+      body: products.isEmpty
+          ? Center(child: Text("Your Cart is Empty\nAdd some Items"))
+          : SingleChildScrollView(
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_outlined,
+                                color: Color(0xff9B9BCA),
+                              ),
+                              tooltip: 'Previous Page',
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(
+                              left: 80.0,
+                              right: 50.0,
+                              top: 20,
+                            ),
+                            child: Text(
+                              'Order Details',
+                              style: TextStyle(
+                                color: Color(0xff272750),
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.screenHeight(context) * 0.03,
+                      ),
+                      Column(
+                        children: products
+                            .map((e) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: ProductSummaryCard(product: e),
+                                ))
+                            .toList(),
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.screenHeight(context) * 0.05,
+                      ),
+                      const Text(
+                        'Delivery Location',
+                        style: TextStyle(
+                          color: Color(0xff272750),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.screenHeight(context) * 0.02,
+                      ),
+                      LocationCard(),
+                      SizedBox(
+                        height: ScreenUtils.screenHeight(context) * 0.05,
+                      ),
+                      const Text(
+                        'Payment Method',
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          color: Color(0xff272750),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.screenHeight(context) * 0.02,
+                      ),
+                      PaymentDetailsCard(),
+                      SizedBox(
+                          height: ScreenUtils.screenHeight(context) * 0.03),
+                    ],
                   ),
-                  Text(product.price.toString()),
-                ],
-              ),
-              title: Text(product.title),
-              subtitle: Text(product.description),
-              trailing: IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  provider
-                      .deleteProductFromCart(product.id)
-                      .then((value) => setState(() {}));
-                },
-              ),
-            );
-          },
-        );
-      }),
+                ),
+                OrderDetailsCard(),
+              ]),
+            ),
     );
   }
 }

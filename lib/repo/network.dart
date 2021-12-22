@@ -15,6 +15,15 @@ class Network {
 
   String get uid => firebaseAuth.currentUser!.uid;
 
+  CollectionReference get cartRef => firestore
+      .collection('users')
+      .doc(firebaseAuth.currentUser!.uid)
+      .collection("cart");
+  CollectionReference get favorizeProductsRef => firestore
+      .collection('users')
+      .doc(firebaseAuth.currentUser!.uid)
+      .collection("favorizedProducts");
+
   Future<ShoppieUser> checkCurrentUser() async {
     final firebaseUser = firebaseAuth.currentUser;
 
@@ -191,5 +200,14 @@ class Network {
     } catch (e) {
       throw e;
     }
+  }
+
+  Future<void> buyProductsFromCart(List<Product> products) async {
+    products.forEach((product) {
+      cartRef.doc(product.id).update({
+        "isPurchased": true,
+        "quantity": product.quantity,
+      });
+    });
   }
 }

@@ -20,6 +20,18 @@ class HomeNotifier with ChangeNotifier {
 
   List<Product> products = List.empty(growable: true);
 
+  void changeQuantity(int quantity, String productId) {
+    final indexOfProduct =
+        cartProducts.indexWhere((element) => element.id == productId);
+    final product = cartProducts[indexOfProduct];
+
+    product.quantity = quantity;
+
+    cartProducts.removeAt(indexOfProduct);
+    cartProducts.insert(indexOfProduct, product);
+    notifyListeners();
+  }
+
   Future<void> uploadProduct(
     BuildContext context, {
     required File image,
@@ -52,6 +64,7 @@ class HomeNotifier with ChangeNotifier {
   }
 
   Future<void> addToCart(Product product, String uid) async {
+    product.quantity = 1;
     await _network.addToCart(product, uid);
   }
 
@@ -69,8 +82,16 @@ class HomeNotifier with ChangeNotifier {
 
   void populateCart(List<Product> cartItems) {
     cartProducts.clear();
-    cartProducts.addAll(cartItems);
+    cartItems.forEach((element) {
+      element.quantity = 1;
+      cartProducts.add(element);
+    });
+
     notifyListeners();
+  }
+
+  Future<void> buyProductsFromCart() async {
+    await _network.buyProductsFromCart(cartProducts);
   }
 }
 

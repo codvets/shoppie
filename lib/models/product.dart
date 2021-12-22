@@ -13,6 +13,7 @@ class Product {
   String image;
   String title;
   String description;
+  int? quantity;
   double price;
   String category;
   int? discount;
