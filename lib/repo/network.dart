@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/shoppie_user.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
+import 'package:path/path.dart';
 
 class Network {
   final firebaseAuth = FirebaseAuth.instance;
@@ -91,16 +92,16 @@ class Network {
   Future<void> uploadProduct(Product product, File productImage) async {
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     product.id = id;
-    final productImageUrl =
-        await uploadProductImage(image: productImage, product: product);
+    final productImageUrl = await uploadImage(
+        image: productImage,
+        reference: "products/${product.sellerId}/${product.id}");
     product.image = productImageUrl;
     await firestore.collection("products").doc(id).set(product.toJson());
   }
 
-  Future<String> uploadProductImage(
-      {required File image, required Product product}) async {
-    final storageReference =
-        storage.ref("products/${product.sellerId}/${product.id}");
+  Future<String> uploadImage(
+      {required File image, required String reference}) async {
+    final storageReference = storage.ref(reference);
 
     TaskSnapshot uploadTask = await storageReference.putFile(image);
     final String url = await uploadTask.ref.getDownloadURL();
@@ -209,5 +210,18 @@ class Network {
         "quantity": product.quantity,
       });
     });
+  }
+
+  Future<String> updateProfile(String name, File image) async {
+    final imageUrl = await uploadImage(
+        image: image,
+        reference:
+            "profilePhotos/${firebaseAuth.currentUser!.uid}/${basename(image.path)}");
+
+    await firestore
+        .collection("users")
+        .doc(firebaseAuth.currentUser!.uid)
+        .update({"image": imageUrl, "name": name});
+    return imageUrl;
   }
 }

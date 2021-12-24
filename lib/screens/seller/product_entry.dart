@@ -7,14 +7,14 @@ import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
 import 'package:shop_app/utils/utils.dart';
 
-class SellerHome extends StatefulWidget {
-  SellerHome({Key? key}) : super(key: key);
+class ProductEntry extends StatefulWidget {
+  ProductEntry({Key? key}) : super(key: key);
 
   @override
-  State<SellerHome> createState() => _SellerHomeState();
+  State<ProductEntry> createState() => _ProductEntryState();
 }
 
-class _SellerHomeState extends State<SellerHome> {
+class _ProductEntryState extends State<ProductEntry> {
   final _formKey = GlobalKey<FormState>();
 
   File? file;

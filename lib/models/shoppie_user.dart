@@ -3,6 +3,7 @@ class ShoppieUser {
   final String email;
   final String name;
   String uid;
+  String? image;
 
   /// [type] shall never be null
   final UserType? type;
@@ -11,6 +12,7 @@ class ShoppieUser {
     required this.type,
     required this.email,
     required this.name,
+    this.image,
     required this.uid,
   }) : assert(type != null, "Type should never be null");
 
@@ -25,12 +27,14 @@ class ShoppieUser {
             : json['type'] == null
                 ? null
                 : UserType.seller,
+        image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
         "email": email,
         "name": name,
         "type": type == UserType.buyer ? "buyer" : "seller",
+        "image": image,
       };
 }
 

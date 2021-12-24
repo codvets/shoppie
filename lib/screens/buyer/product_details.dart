@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
+import 'package:shop_app/utils/routes.dart';
 
 class ProductDetails extends StatelessWidget {
   const ProductDetails({Key? key}) : super(key: key);
@@ -186,28 +187,48 @@ class ProductDetails extends StatelessWidget {
                                     fontSize: 20,
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    homeProvider(context).favorizeProduct(
-                                        product,
-                                        authProvider(context).currentUser.uid);
-                                  },
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.09,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.18,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.orangeAccent,
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.favorite,
-                                        color: Colors.red,
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        homeProvider(context).favorizeProduct(
+                                            product,
+                                            authProvider(context)
+                                                .currentUser
+                                                .uid);
+                                      },
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.09,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.18,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.orangeAccent,
+                                        ),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.amber),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pushNamed(Routes.chat);
+                                      },
+                                      child: Text("Chat with Seller"),
+                                    )
+                                  ],
                                 )
                               ],
                             ),
