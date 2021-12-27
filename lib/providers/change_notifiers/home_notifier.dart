@@ -1,9 +1,16 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/models/message.dart';
 import 'package:shop_app/models/product.dart';
+import 'package:shop_app/models/shoppie_user.dart';
+import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/repo/network.dart';
+import 'package:shop_app/screens/chats.dart';
+import 'package:shop_app/utils/routes.dart';
 
 class HomeNotifier with ChangeNotifier {
   Category selectedCategory = Category.shoes;
@@ -92,6 +99,32 @@ class HomeNotifier with ChangeNotifier {
 
   Future<void> buyProductsFromCart() async {
     await _network.buyProductsFromCart(cartProducts);
+  }
+
+  Future<void> chatWithSeller(BuildContext context,
+      {required String sellerId}) async {
+    final chatId = await _network.getChatId(sellerId: sellerId);
+
+    Navigator.of(context).pushNamed(
+      Routes.chat,
+      arguments: ChatArgs(sellerId: sellerId, chatId: chatId!),
+    );
+  }
+
+  Future<void> sendMessage(context,
+      {required String chatId,
+      required String sellerId,
+      required String message}) async {
+    final currentUser =
+        Provider.of<AuthNotifier>(context, listen: false).currentUser;
+    final msg = Message(
+        sentTime: Timestamp.fromDate(DateTime.now()),
+        senderId: currentUser.uid,
+        senderName: currentUser.name,
+        receiverId: sellerId,
+        body: message);
+
+    await _network.sendMessage(msg, chatId);
   }
 }
 

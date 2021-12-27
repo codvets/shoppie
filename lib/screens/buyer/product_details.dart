@@ -223,8 +223,10 @@ class ProductDetails extends StatelessWidget {
                                                 Colors.amber),
                                       ),
                                       onPressed: () {
-                                        Navigator.of(context)
-                                            .pushNamed(Routes.chat);
+                                        homeProvider(context).chatWithSeller(
+                                          context,
+                                          sellerId: product.sellerId,
+                                        );
                                       },
                                       child: Text("Chat with Seller"),
                                     )

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shop_app/models/message.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/shoppie_user.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
@@ -224,4 +225,50 @@ class Network {
         .update({"image": imageUrl, "name": name});
     return imageUrl;
   }
+
+  Future<String?> getChatId({required String sellerId}) async {
+    final chatDoc = await firestore
+        .collection("chats")
+        .doc(sellerId + firebaseAuth.currentUser!.uid)
+        .get();
+
+    if (!chatDoc.exists) {
+      await firestore
+          .collection("chats")
+          .doc(sellerId + firebaseAuth.currentUser!.uid)
+          .set({
+        "creationTime": DateTime.now(),
+        "lastUpdatedTime": DateTime.now(),
+        "members": {
+          sellerId: true,
+          firebaseAuth.currentUser!.uid: true,
+        }
+      });
+    }
+
+    return sellerId + firebaseAuth.currentUser!.uid;
+  }
+
+  Future<void> sendMessage(Message message, String chatId) async {
+    await firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection("messages")
+        .add(message.toJson());
+  }
 }
+
+
+/*
+
+  {
+    id: chatIdadkflj2lfj,
+    creationTime: Date,
+    lastUpdatedTime: Date,
+    members: {
+*buyer Id*      "asjdfklj3lk2j23lk": true,
+*seller Id*      "asfjklj2lkj32lkfjkl23jf": true
+    }
+  }
+
+*/
