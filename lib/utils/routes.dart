@@ -6,6 +6,7 @@ import 'package:shop_app/screens/buyer/cart.dart';
 import 'package:shop_app/screens/buyer/home.dart';
 import 'package:shop_app/screens/buyer/product_details.dart';
 import 'package:shop_app/screens/chats.dart';
+import 'package:shop_app/screens/conversation.dart';
 
 import 'package:shop_app/screens/login_screen.dart';
 import 'package:shop_app/screens/seller/product_entry.dart';
@@ -24,6 +25,7 @@ class Routes {
   static const signUp = '/sign_up';
   static const authLanding = '/auth_landing';
   static const loginScreen = '/login_screen';
+  static const conversation = '/conversation';
 
   //SELLER
   static const sellerHome = '/seller_home';
@@ -43,5 +45,6 @@ class Routes {
         sellerProfile: (context) => SellerProfile(),
         productEntry: (context) => ProductEntry(),
         chat: (context) => Chats(),
+        conversation: (context) => Conversation(),
       };
 }

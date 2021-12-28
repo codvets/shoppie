@@ -9,7 +9,7 @@ import 'package:shop_app/models/product.dart';
 import 'package:shop_app/models/shoppie_user.dart';
 import 'package:shop_app/providers/change_notifiers/auth_notifier.dart';
 import 'package:shop_app/repo/network.dart';
-import 'package:shop_app/screens/chats.dart';
+import 'package:shop_app/screens/conversation.dart';
 import 'package:shop_app/utils/routes.dart';
 
 class HomeNotifier with ChangeNotifier {
@@ -106,7 +106,7 @@ class HomeNotifier with ChangeNotifier {
     final chatId = await _network.getChatId(sellerId: sellerId);
 
     Navigator.of(context).pushNamed(
-      Routes.chat,
+      Routes.conversation,
       arguments: ChatArgs(sellerId: sellerId, chatId: chatId!),
     );
   }

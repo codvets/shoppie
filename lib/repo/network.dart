@@ -256,6 +256,15 @@ class Network {
         .collection("messages")
         .add(message.toJson());
   }
+
+  Future<ShoppieUser?> getUserById(String userId) async {
+    final doc = await firestore.collection("users").doc(userId).get();
+
+    if (doc.exists) {
+      final user = ShoppieUser.fromJson(doc.data()!, uid: doc.id);
+      return user;
+    }
+  }
 }
 
 
