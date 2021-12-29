@@ -223,9 +223,9 @@ class ProductDetails extends StatelessWidget {
                                                 Colors.amber),
                                       ),
                                       onPressed: () {
-                                        homeProvider(context).chatWithSeller(
+                                        homeProvider(context).openChatBox(
                                           context,
-                                          sellerId: product.sellerId,
+                                          otherUserId: product.sellerId,
                                         );
                                       },
                                       child: Text("Chat with Seller"),

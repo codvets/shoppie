@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/change_notifiers/home_notifier.dart';
+import 'package:shop_app/providers/chats_provider.dart';
 import 'package:shop_app/screens/buyer/auth_landing.dart';
 import 'package:shop_app/screens/buyer/cart.dart';
 import 'package:shop_app/screens/buyer/home.dart';
@@ -44,7 +45,8 @@ class Routes {
         cart: (context) => Cart(),
         sellerProfile: (context) => SellerProfile(),
         productEntry: (context) => ProductEntry(),
-        chat: (context) => Chats(),
+        chat: (context) => ChangeNotifierProvider(
+            create: (context) => ChatProvider(), child: Chats()),
         conversation: (context) => Conversation(),
       };
 }

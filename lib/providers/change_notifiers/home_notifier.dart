@@ -101,13 +101,14 @@ class HomeNotifier with ChangeNotifier {
     await _network.buyProductsFromCart(cartProducts);
   }
 
-  Future<void> chatWithSeller(BuildContext context,
-      {required String sellerId}) async {
-    final chatId = await _network.getChatId(sellerId: sellerId);
+  Future<void> openChatBox(BuildContext context,
+      {required String otherUserId, bool? isFromSeller}) async {
+    final chatId = await _network.getChatId(
+        otherUserId: otherUserId, isFromSeller: isFromSeller);
 
     Navigator.of(context).pushNamed(
       Routes.conversation,
-      arguments: ChatArgs(sellerId: sellerId, chatId: chatId!),
+      arguments: ChatArgs(otherUserId: otherUserId, chatId: chatId!),
     );
   }
 

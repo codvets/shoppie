@@ -226,27 +226,31 @@ class Network {
     return imageUrl;
   }
 
-  Future<String?> getChatId({required String sellerId}) async {
-    final chatDoc = await firestore
-        .collection("chats")
-        .doc(sellerId + firebaseAuth.currentUser!.uid)
-        .get();
+  Future<String?> getChatId(
+      {required String otherUserId, bool? isFromSeller}) async {
+    log("IS FROM SELLER $isFromSeller");
+
+    String? chatId;
+
+    if (isFromSeller != null) {
+      chatId = firebaseAuth.currentUser!.uid + otherUserId;
+    } else {
+      chatId = otherUserId + firebaseAuth.currentUser!.uid;
+    }
+    final chatDoc = await firestore.collection("chats").doc(chatId).get();
 
     if (!chatDoc.exists) {
-      await firestore
-          .collection("chats")
-          .doc(sellerId + firebaseAuth.currentUser!.uid)
-          .set({
+      await firestore.collection("chats").doc(chatId).set({
         "creationTime": DateTime.now(),
         "lastUpdatedTime": DateTime.now(),
         "members": {
-          sellerId: true,
+          otherUserId: true,
           firebaseAuth.currentUser!.uid: true,
         }
       });
     }
 
-    return sellerId + firebaseAuth.currentUser!.uid;
+    return chatId;
   }
 
   Future<void> sendMessage(Message message, String chatId) async {

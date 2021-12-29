@@ -95,7 +95,7 @@ class Conversation extends StatelessWidget {
                                   .sendMessage(
                                 context,
                                 message: _messageController.text,
-                                sellerId: args.sellerId,
+                                sellerId: args.otherUserId,
                                 chatId: args.chatId,
                               );
                               _messageController.clear();
@@ -108,7 +108,7 @@ class Conversation extends StatelessWidget {
                             Provider.of<HomeNotifier>(context, listen: false)
                                 .sendMessage(context,
                                     message: _messageController.text,
-                                    sellerId: args.sellerId,
+                                    sellerId: args.otherUserId,
                                     chatId: args.chatId);
                           },
                           icon: Icon(
@@ -133,7 +133,7 @@ class Conversation extends StatelessWidget {
 
 class ChatArgs {
   String chatId;
-  String sellerId;
+  String otherUserId;
 
-  ChatArgs({required this.chatId, required this.sellerId});
+  ChatArgs({required this.chatId, required this.otherUserId});
 }

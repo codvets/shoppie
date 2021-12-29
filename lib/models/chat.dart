@@ -8,7 +8,7 @@ class Chat {
   ShoppieUser? user;
   Timestamp creationTime;
   Timestamp lastUpdatedTime;
-  Map<String, bool> members;
+  Map<String, dynamic> members;
   String? id;
 
   Chat(
@@ -22,7 +22,7 @@ class Chat {
       String currentUserId) async {
     final data = snapshot.data()!;
 
-    final Map<String, bool> users = data["members"];
+    final Map<String, dynamic> users = data["members"];
 
     final userIds = users.keys.toList();
 
